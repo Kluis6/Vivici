@@ -2,6 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
 import { PrismaClient } from "@/generated/prisma/client";
+import { getPgConnectionString, getPgSslConfig } from "@/lib/database-url";
 import { getServerEnv } from "@/lib/env";
 
 declare global {
@@ -15,7 +16,8 @@ export function getPrisma() {
 
   const env = getServerEnv();
   const pool = new Pool({
-    connectionString: env.DATABASE_URL,
+    connectionString: getPgConnectionString(env.DATABASE_URL),
+    ssl: getPgSslConfig(env.DATABASE_URL),
   });
   const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });

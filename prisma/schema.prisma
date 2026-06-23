@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -14,7 +9,9 @@ datasource db {
 
 enum UserRole {
   ADMIN
+  MANAGER
   AGENT
+  MARKETING
 }
 
 enum LeadStatus {
@@ -26,7 +23,7 @@ enum LeadStatus {
   LOST
 }
 
-enum PropertyStatus {
+enum PropertyLifecycleStatus {
   DRAFT
   ACTIVE
   IN_NEGOTIATION
@@ -34,69 +31,342 @@ enum PropertyStatus {
   ARCHIVED
 }
 
+enum DevelopmentStage {
+  RELEASE
+  UNDER_CONSTRUCTION
+  READY
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  COMMERCIAL
+  LAND
+  STUDIO
+  OTHER
+}
+
+enum MediaKind {
+  COVER
+  HERO_DESKTOP
+  HERO_MOBILE
+  GALLERY
+  PLANT
+  REGION
+  OTHER
+}
+
+enum AmenitySource {
+  LISTING
+  DETAIL
+}
+
+enum LocationKind {
+  SALES_STAND
+  DEVELOPMENT
+  OTHER
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  PAUSED
+  FINISHED
+  ARCHIVED
+}
+
+enum CampaignChannel {
+  SITE
+  WHATSAPP
+  META
+  GOOGLE
+  EMAIL
+  PARTNER
+  OTHER
+}
+
+enum CampaignPlacement {
+  HERO
+  HIGHLIGHT
+  GRID
+  LANDING_PAGE
+  POPUP
+  OTHER
+}
+
+enum PromotionType {
+  DISCOUNT
+  BONUS
+  SUBSIDY
+  LAUNCH
+  INVESTMENT
+  CASHBACK
+  LIMITED_TIME
+  OTHER
+}
+
+model CatalogImport {
+  id             String     @id @default(cuid())
+  sourceName     String     @default("cury.net")
+  sourceUrl      String
+  generatedAtUtc DateTime
+  totals         Json
+  categories     Json
+  importedAt     DateTime   @default(now())
+  importedById   String?
+  importedBy     User?      @relation("CatalogImportedBy", fields: [importedById], references: [id], onDelete: SetNull)
+  properties     Property[]
+
+  @@index([generatedAtUtc])
+}
+
+model State {
+  code       String     @id
+  name       String
+  regions    Region[]
+  properties Property[]
+}
+
+model Region {
+  id           String     @id @default(cuid())
+  stateCode    String
+  externalValue String?
+  slug         String
+  name         String
+  aboutImageUrl String?
+  aboutHtml    String?
+  aboutText    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  state        State      @relation(fields: [stateCode], references: [code], onDelete: Restrict)
+  properties   Property[]
+
+  @@unique([stateCode, slug])
+  @@index([stateCode, name])
+}
+
 model User {
-  id          String      @id @default(cuid())
-  email       String      @unique
-  fullName    String
-  role        UserRole    @default(AGENT)
-  phone       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  properties  Property[]
-  leads       Lead[]
+  id              String         @id @default(cuid())
+  authUserId      String?        @unique
+  email           String         @unique
+  fullName        String
+  role            UserRole       @default(AGENT)
+  phone           String?
+  passwordHash    String?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  propertiesCreated Property[]   @relation("PropertyCreatedBy")
+  propertiesUpdated Property[]   @relation("PropertyUpdatedBy")
+  campaignsCreated Campaign[]    @relation("CampaignCreatedBy")
+  campaignsUpdated Campaign[]    @relation("CampaignUpdatedBy")
+  importedCatalogs CatalogImport[] @relation("CatalogImportedBy")
+  leadsAssigned   Lead[]         @relation("LeadAssignedTo")
 }
 
 model Property {
-  id             String         @id @default(cuid())
-  slug           String         @unique
-  title          String
-  neighborhood   String
-  city           String
-  state          String
-  description    String?
-  salePriceInCents Int?
-  rentPriceInCents Int?
-  bedrooms       Int?
-  bathrooms      Int?
-  parkingSpots   Int?
-  areaInSquareMeters Decimal?   @db.Decimal(10, 2)
-  status         PropertyStatus @default(DRAFT)
-  isFeatured     Boolean        @default(false)
-  publishedAt    DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  agentId        String?
-  agent          User?          @relation(fields: [agentId], references: [id], onDelete: SetNull)
-  images         PropertyImage[]
-  leads          Lead[]
+  id                  String                  @id @default(cuid())
+  externalId          Int?                    @unique
+  importBatchId       String?
+  sourceUrl           String
+  slug                String                  @unique
+  title               String
+  stateCode           String
+  regionId            String?
+  neighborhood        String
+  status              PropertyLifecycleStatus @default(DRAFT)
+  developmentStage    DevelopmentStage?
+  externalStatusCode  Int?
+  externalStatusLabel String?
+  externalStatusSlug  String?
+  propertyType        PropertyType?
+  summary             String?
+  highlightText       String?
+  descriptionHtml     String?
+  descriptionText     String?
+  legalTextHtml       String?
+  legalText           String?
+  bedroomsLabel       String?
+  minBedrooms         Int?
+  maxBedrooms         Int?
+  hasStudio           Boolean                 @default(false)
+  isSoldOut           Boolean                 @default(false)
+  hidePrice           Boolean                 @default(false)
+  coverImageUrl       String?
+  heroImageDesktopUrl String?
+  heroImageMobileUrl  String?
+  videoTourUrl        String?
+  presentationVideoUrl String?
+  latitude            Decimal?                @db.Decimal(10, 7)
+  longitude           Decimal?                @db.Decimal(10, 7)
+  sourceRaw           Json?
+  publishedAt         DateTime?
+  isFeatured          Boolean                 @default(false)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  createdById         String?
+  updatedById         String?
+  importBatch         CatalogImport?          @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  state               State                   @relation(fields: [stateCode], references: [code], onDelete: Restrict)
+  region              Region?                 @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  createdBy           User?                   @relation("PropertyCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy           User?                   @relation("PropertyUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  media               PropertyMedia[]
+  amenities           PropertyAmenity[]
+  locations           PropertyLocation[]
+  bedroomOptions      PropertyBedroomOption[]
+  relatedProperties   PropertyRelation[]      @relation("PropertyRelationSource")
+  referencedBy        PropertyRelation[]      @relation("PropertyRelationTarget")
+  campaigns           CampaignProperty[]
+  leads               Lead[]
+
+  @@index([stateCode, neighborhood])
+  @@index([regionId, developmentStage])
+  @@index([status, publishedAt])
 }
 
-model PropertyImage {
-  id         String   @id @default(cuid())
+model PropertyMedia {
+  id         String    @id @default(cuid())
   propertyId String
+  kind       MediaKind
   url        String
   alt        String?
-  position   Int      @default(0)
-  createdAt  DateTime @default(now())
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  position   Int       @default(0)
+  isPrimary  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, url])
+  @@index([propertyId, kind, position])
+}
+
+model Amenity {
+  id             String            @id @default(cuid())
+  slug           String            @unique
+  label          String
+  defaultIconUrl String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  properties     PropertyAmenity[]
+}
+
+model PropertyAmenity {
+  propertyId         String
+  amenityId          String
+  source             AmenitySource
+  position           Int       @default(0)
+  iconUrl            String?
+  hiddenUntilExpand  Boolean   @default(false)
+  property           Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity            Amenity   @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, amenityId, source])
+  @@index([amenityId])
+}
+
+model PropertyLocation {
+  id            String        @id @default(cuid())
+  propertyId    String
+  kind          LocationKind  @default(OTHER)
+  label         String
+  address       String
+  wazeUrl       String?
+  googleMapsUrl String?
+  latitude      Decimal?      @db.Decimal(10, 7)
+  longitude     Decimal?      @db.Decimal(10, 7)
+  position      Int           @default(0)
+  property      Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId, position])
 }
 
+model PropertyBedroomOption {
+  id         String    @id @default(cuid())
+  propertyId String
+  label      String
+  bedrooms   Int?
+  position   Int       @default(0)
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, label])
+  @@index([propertyId, position])
+}
+
+model PropertyRelation {
+  propertyId        String
+  relatedSlug       String
+  relatedPropertyId String?
+  relatedUrl        String
+  title             String
+  neighborhood      String?
+  summary           String?
+  position          Int       @default(0)
+  property          Property  @relation("PropertyRelationSource", fields: [propertyId], references: [id], onDelete: Cascade)
+  relatedProperty   Property? @relation("PropertyRelationTarget", fields: [relatedPropertyId], references: [id], onDelete: SetNull)
+
+  @@id([propertyId, relatedSlug])
+  @@index([relatedPropertyId])
+}
+
+model Campaign {
+  id             String            @id @default(cuid())
+  slug           String            @unique
+  name           String
+  headline       String
+  description    String?
+  status         CampaignStatus    @default(DRAFT)
+  channel        CampaignChannel   @default(SITE)
+  placement      CampaignPlacement @default(HIGHLIGHT)
+  promotionType  PromotionType     @default(OTHER)
+  ctaLabel       String?
+  ctaUrl         String?
+  rulesHtml      String?
+  rulesText      String?
+  budgetInCents  Int?
+  startsAt       DateTime?
+  endsAt         DateTime?
+  isHighlighted  Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  createdById    String?
+  updatedById    String?
+  createdBy      User?             @relation("CampaignCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy      User?             @relation("CampaignUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  properties     CampaignProperty[]
+  leads          Lead[]
+
+  @@index([status, startsAt, endsAt])
+}
+
+model CampaignProperty {
+  campaignId     String
+  propertyId     String
+  position       Int       @default(0)
+  highlightText  String?
+  campaign       Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  property       Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([campaignId, propertyId])
+  @@index([propertyId])
+}
+
 model Lead {
-  id          String     @id @default(cuid())
-  fullName    String
-  email       String?
-  phone       String
-  message     String?
-  status      LeadStatus @default(NEW)
-  source      String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  propertyId  String?
-  assignedToId String?
-  property    Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  assignedTo  User?      @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  id            String      @id @default(cuid())
+  fullName      String
+  email         String?
+  phone         String
+  message       String?
+  status        LeadStatus  @default(NEW)
+  source        String?
+  propertyId    String?
+  campaignId    String?
+  assignedToId  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  property      Property?   @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  campaign      Campaign?   @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  assignedTo    User?       @relation("LeadAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
 
   @@index([status, createdAt])
 }

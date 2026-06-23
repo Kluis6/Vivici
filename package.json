@@ -10,6 +10,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:import:cury": "tsx prisma/import-cury.ts",
+    "auth:sync-admin": "tsx prisma/sync-admin-auth.ts",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },
@@ -42,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }
