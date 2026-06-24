@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getPrisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function PromotionsPage() {
   const prisma = getPrisma();
   const campaigns = await prisma.campaign.findMany({

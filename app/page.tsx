@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDateTime, getPublicCatalogData } from "@/lib/catalog";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { stats, featuredProperties, highlightedCampaigns, latestImport } =
     await getPublicCatalogData();
