@@ -4,6 +4,9 @@ import { CampaignStatus, PropertyLifecycleStatus } from "@/generated/prisma/clie
 import { CampaignCard } from "@/components/campaign-card";
 import { PropertyCard } from "@/components/property-card";
 import { SiteShell } from "@/components/site-shell";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   developmentStageOptions,
   labelFromOptions,
@@ -96,54 +99,105 @@ export default async function PropertyDetailsPage({
     <SiteShell>
       <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-10">
         <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-                {property.region?.name ?? "Catálogo Vivici"}
-              </p>
-              <div>
-                <h1 className="text-5xl font-semibold tracking-[-0.04em] text-foreground">
-                  {property.title}
-                </h1>
-                <p className="mt-3 text-lg text-muted-foreground">
-                  {property.neighborhood}
-                  {property.region ? ` • ${property.region.name}` : ""}
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-col gap-6">
+            <Card className="overflow-hidden rounded-[2.4rem] border border-border bg-surface/92 py-0 shadow-[0_26px_90px_rgba(0,0,0,0.22)] ring-0">
+              <div className="relative overflow-hidden">
+                {property.heroImageDesktopUrl ?? property.coverImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={property.heroImageDesktopUrl ?? property.coverImageUrl ?? ""}
+                    alt={property.title}
+                    className="aspect-[16/10] h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex aspect-[16/10] items-center justify-center text-muted-foreground">
+                    Sem imagem principal
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,21,37,0.12),rgba(7,21,37,0.88))]" />
+                <CardContent className="absolute inset-x-0 bottom-0 flex flex-col gap-5 p-7 sm:p-8">
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">
+                      {labelFromOptions(propertyTypeOptions, property.propertyType) ?? "Imóvel"}
+                    </Badge>
+                    {property.developmentStage ? (
+                      <Badge variant="outline">
+                        {labelFromOptions(developmentStageOptions, property.developmentStage)}
+                      </Badge>
+                    ) : null}
+                    <Badge variant="outline">
+                      {property.isSoldOut ? "Vendido" : "Disponível"}
+                    </Badge>
+                  </div>
 
-            <div className="overflow-hidden rounded-[2rem] border border-border bg-surface">
-              {property.heroImageDesktopUrl ?? property.coverImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={property.heroImageDesktopUrl ?? property.coverImageUrl ?? ""}
-                  alt={property.title}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex aspect-[16/9] items-center justify-center text-muted-foreground">
-                  Sem imagem principal
-                </div>
-              )}
-            </div>
+                  <div className="flex flex-col gap-3">
+                    <p className="font-mono text-xs uppercase tracking-[0.3em] text-accent-soft">
+                      {property.region?.name ?? "Catálogo Vivici"}
+                    </p>
+                    <h1 className="text-5xl font-semibold tracking-[-0.04em] text-foreground">
+                      {property.title}
+                    </h1>
+                    <p className="text-lg text-muted-foreground">
+                      {property.neighborhood}
+                      {property.region ? ` • ${property.region.name}` : ""}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 rounded-[1.8rem] border border-border bg-[rgba(255,245,232,0.14)] p-4 backdrop-blur sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                        Dormitórios
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        {property.bedroomsLabel ?? "Sob consulta"}
+                      </span>
+                    </div>
+                    <Separator orientation="vertical" className="hidden h-10 sm:block" />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                        Bairro
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        {property.neighborhood}
+                      </span>
+                    </div>
+                    <Separator orientation="vertical" className="hidden h-10 sm:block" />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                        Fonte
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        Vivici Collection
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
 
             {property.descriptionText ? (
-              <article className="rounded-[2rem] border border-border bg-surface/82 p-6">
-                <h2 className="text-2xl font-semibold text-foreground">Sobre o imóvel</h2>
-                <p className="mt-4 whitespace-pre-line text-sm leading-8 text-muted-foreground">
-                  {property.descriptionText}
-                </p>
-              </article>
+              <Card className="rounded-[2rem] border border-border bg-surface/82 shadow-[0_18px_60px_rgba(0,0,0,0.14)] ring-0">
+                <CardHeader className="flex flex-col gap-2">
+                  <CardTitle className="text-2xl font-semibold text-foreground">
+                    Sobre o imóvel
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="whitespace-pre-line text-sm leading-8 text-muted-foreground">
+                    {property.descriptionText}
+                  </p>
+                </CardContent>
+              </Card>
             ) : null}
 
             {property.media.length > 0 ? (
-              <section className="space-y-4">
+              <section className="flex flex-col gap-4">
                 <h2 className="text-2xl font-semibold text-foreground">Galeria</h2>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {property.media.slice(0, 9).map((media) => (
                     <div
                       key={media.id}
-                      className="overflow-hidden rounded-[1.5rem] border border-border bg-surface"
+                      className="overflow-hidden rounded-[1.6rem] border border-border bg-surface shadow-[0_14px_50px_rgba(0,0,0,0.12)]"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -158,17 +212,27 @@ export default async function PropertyDetailsPage({
             ) : null}
           </div>
 
-          <aside className="space-y-6">
-            <article className="rounded-[2rem] border border-border bg-surface/82 p-6">
-              <h2 className="text-2xl font-semibold text-foreground">Resumo</h2>
-              <dl className="mt-5 space-y-3 text-sm text-muted-foreground">
+          <aside className="flex flex-col gap-6">
+            <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
+              <CardHeader className="flex flex-col gap-2">
+                <CardTitle className="text-2xl font-semibold text-foreground">Resumo</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
                 <div className="flex justify-between gap-4">
                   <dt>Tipo</dt>
-                  <dd>{labelFromOptions(propertyTypeOptions, property.propertyType) ?? "Não informado"}</dd>
+                  <dd>
+                    {labelFromOptions(propertyTypeOptions, property.propertyType) ??
+                      "Não informado"}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt>Fase</dt>
-                  <dd>{labelFromOptions(developmentStageOptions, property.developmentStage) ?? "Não informada"}</dd>
+                  <dd>
+                    {labelFromOptions(
+                      developmentStageOptions,
+                      property.developmentStage,
+                    ) ?? "Não informada"}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt>Dormitórios</dt>
@@ -178,29 +242,37 @@ export default async function PropertyDetailsPage({
                   <dt>Status comercial</dt>
                   <dd>{property.isSoldOut ? "Vendido" : "Disponível"}</dd>
                 </div>
-              </dl>
-            </article>
+              </CardContent>
+            </Card>
 
             {property.amenities.length > 0 ? (
-              <article className="rounded-[2rem] border border-border bg-surface/82 p-6">
-                <h2 className="text-2xl font-semibold text-foreground">Diferenciais</h2>
-                <ul className="mt-5 grid gap-3 text-sm text-muted-foreground">
+              <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
+                <CardHeader className="flex flex-col gap-2">
+                  <CardTitle className="text-2xl font-semibold text-foreground">
+                    Diferenciais
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-3 text-sm text-muted-foreground">
                   {property.amenities.map((item) => (
-                    <li
+                    <div
                       key={`${item.propertyId}-${item.amenityId}-${item.source}`}
                       className="rounded-2xl border border-border bg-white/4 px-4 py-3"
                     >
                       {item.amenity.label}
-                    </li>
+                    </div>
                   ))}
-                </ul>
-              </article>
+                </CardContent>
+              </Card>
             ) : null}
 
             {property.locations.length > 0 ? (
-              <article className="rounded-[2rem] border border-border bg-surface/82 p-6">
-                <h2 className="text-2xl font-semibold text-foreground">Localização</h2>
-                <div className="mt-5 space-y-4">
+              <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
+                <CardHeader className="flex flex-col gap-2">
+                  <CardTitle className="text-2xl font-semibold text-foreground">
+                    Localização
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
                   {property.locations.map((location) => (
                     <div
                       key={location.id}
@@ -210,14 +282,14 @@ export default async function PropertyDetailsPage({
                       <p className="mt-2 leading-7">{location.address}</p>
                     </div>
                   ))}
-                </div>
-              </article>
+                </CardContent>
+              </Card>
             ) : null}
           </aside>
         </section>
 
         {activeCampaigns.length > 0 ? (
-          <section className="mt-14 space-y-5">
+          <section className="mt-14 flex flex-col gap-5">
             <h2 className="text-3xl font-semibold text-foreground">Campanhas ligadas</h2>
             <div className="grid gap-6">
               {activeCampaigns.map((campaign) => (
@@ -228,7 +300,7 @@ export default async function PropertyDetailsPage({
         ) : null}
 
         {property.relatedProperties.length > 0 ? (
-          <section className="mt-14 space-y-5">
+          <section className="mt-14 flex flex-col gap-5">
             <h2 className="text-3xl font-semibold text-foreground">Imóveis relacionados</h2>
             <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {property.relatedProperties

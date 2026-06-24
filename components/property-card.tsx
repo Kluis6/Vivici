@@ -1,5 +1,14 @@
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import type { Property, Region } from "@/generated/prisma/client";
 import {
   developmentStageOptions,
@@ -32,8 +41,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
   const typeLabel = labelFromOptions(propertyTypeOptions, property.propertyType);
 
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-border bg-surface/88 shadow-[0_18px_60px_rgba(0,0,0,0.16)]">
-      <div className="aspect-[4/3] bg-surface-elevated">
+    <Card className="overflow-hidden rounded-[2rem] border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+      <div className="relative aspect-[4/3] bg-surface-elevated">
         {property.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -46,50 +55,63 @@ export function PropertyCard({ property }: PropertyCardProps) {
             Sem imagem
           </div>
         )}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[rgba(7,21,37,0.92)] to-transparent" />
+        <div className="absolute inset-x-4 bottom-4 flex flex-wrap gap-2">
+          {property.isFeatured ? <Badge>Destaque</Badge> : null}
+          {stageLabel ? <Badge variant="secondary">{stageLabel}</Badge> : null}
+          {typeLabel ? <Badge variant="outline">{typeLabel}</Badge> : null}
+        </div>
       </div>
 
-      <div className="space-y-4 p-5">
-        <div className="flex flex-wrap gap-2">
-          {property.isFeatured ? (
-            <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-              Destaque
-            </span>
-          ) : null}
-          {stageLabel ? (
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-              {stageLabel}
-            </span>
-          ) : null}
-          {typeLabel ? (
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-              {typeLabel}
-            </span>
-          ) : null}
-        </div>
+      <CardHeader className="flex flex-col gap-3 px-5 pt-5">
+        <CardTitle className="text-2xl font-semibold text-foreground">
+          {property.title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {property.neighborhood}
+          {property.region ? ` • ${property.region.name}` : ""}
+        </p>
+      </CardHeader>
 
-        <div>
-          <h3 className="text-2xl font-semibold text-foreground">{property.title}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {property.neighborhood}
-            {property.region ? ` • ${property.region.name}` : ""}
-          </p>
+      <CardContent className="flex flex-col gap-4 px-5">
+        <div className="grid grid-cols-2 gap-3 rounded-[1.5rem] bg-[rgba(255,255,255,0.04)] p-3">
+          <div className="flex flex-col gap-1 rounded-[1.2rem] bg-[rgba(255,241,207,0.08)] p-3">
+            <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+              Região
+            </span>
+            <span className="text-sm font-medium text-foreground">
+              {property.region?.name ?? "Não informada"}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 rounded-[1.2rem] bg-[rgba(255,255,255,0.04)] p-3">
+            <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+              Tipologia
+            </span>
+            <span className="text-sm font-medium text-foreground">
+              {property.bedroomsLabel ?? "Sob consulta"}
+            </span>
+          </div>
         </div>
-
         <p className="text-sm leading-7 text-muted-foreground">
           {property.highlightText ?? "Consulte os detalhes completos deste imóvel."}
         </p>
+      </CardContent>
 
-        {property.bedroomsLabel ? (
-          <p className="text-sm font-medium text-accent-soft">{property.bedroomsLabel}</p>
-        ) : null}
-
+      <CardFooter className="flex items-center justify-between gap-4 border-t border-border bg-[rgba(255,255,255,0.03)] px-5 py-4">
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+            Vivici Collection
+          </span>
+          <span className="truncate text-sm text-foreground">{property.slug}</span>
+        </div>
+        <Separator orientation="vertical" className="hidden h-8 md:block" />
         <Link
           href={`/imoveis/${property.slug}`}
-          className="inline-flex rounded-full border border-border bg-white/5 px-4 py-2 text-sm font-medium text-foreground transition hover:bg-white/10"
+          className="inline-flex rounded-full bg-accent-soft px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
         >
           Ver imóvel
         </Link>
-      </div>
-    </article>
+      </CardFooter>
+    </Card>
   );
 }
