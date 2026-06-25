@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Herosection() {
   return (
-    <section className="relative h-[80vh] w-full overflow-hidden bg-cover">
+    <section className="relative h-[78vh] w-full overflow-hidden bg-cover">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
