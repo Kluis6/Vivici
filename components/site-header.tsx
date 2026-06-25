@@ -100,26 +100,26 @@ export function SiteHeader() {
               <DrawerClose asChild>
                 <Link
                   href="/"
-                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
+                  className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
                 >
                   
               
                   
-                  <FaSquareFacebook className="size-6 text-accent"/>
+                  <FaSquareFacebook className="size-7 text-accent"/>
                 </Link>
               </DrawerClose>
               <DrawerClose asChild>
                 <Link
                   href="/"
-                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
-                ><ImInstagram className="size-5 text-accent" /></Link>
+                  className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
+                ><ImInstagram className="size-6 text-accent" /></Link>
               </DrawerClose>
               <DrawerClose asChild>
                 <Link
                   href="/"
-                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
+                  className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
                 >
-                <FaLinkedin  className="size-6 text-accent" />
+                <FaLinkedin  className="size-7 text-accent" />
                 </Link>
               </DrawerClose>
             </DrawerFooter>
