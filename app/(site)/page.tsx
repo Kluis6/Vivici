@@ -2,10 +2,11 @@ import Link from "next/link";
 
 import { CampaignCard } from "@/components/campaign-card";
 import { PropertyCard } from "@/components/property-card";
-import Image from "next/image";
+
 
 import { formatDateTime, getPublicCatalogData } from "@/lib/catalog";
-import { Button } from "@/components/ui/button";
+import Herosection from "@/components/herosection";
+
 
 export const dynamic = "force-dynamic";
 
@@ -15,21 +16,8 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full container flex-col gap-y-16 px-4 py-4">
-      <div className="h-[60vh] w-full bg-cover relative">
-        <div className=" bg-surface/10 backdrop-brightness-90 absolute w-full h-full z-10"></div>
-        <Image
-          src="/Gemini_Generated_Image_3hkj2c3hkj2c3hkj.png"
-          alt="Destaque"
-          fill
-          className="object-cover absolute "
-        />
-        <div className="z-20 absolute p-4 flex flex-col justify-between h-full w-full">
-          <h2 className="text-4xl font-bold drop-shadow-lg text-white">Encontre seu lar ideal de  forma rápida e simples</h2>
-          <Button  className=" rounded-none bg-accent-soft px-5 py-5 shadow  text-sm font-semibold text-primary-foreground w-full">
-            <Link href="/imoveis">Ver imóveis</Link>
-          </Button>
-        </div>
-      </div>
+      <Herosection />
+  
       {/* <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col gap-7 rounded-[2.4rem] border border-border bg-[linear-gradient(160deg,rgba(11,26,43,0.96),rgba(7,21,37,0.88))] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.28)] sm:p-9">
           <div className="flex flex-wrap gap-2">
