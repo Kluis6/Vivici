@@ -76,7 +76,7 @@ export function SiteHeader() {
                 Imobiliária digital
               </DrawerDescription>
             </DrawerHeader>
-            <div className="no-scrollbar overflow-y-auto px-4">
+            <div className="px-4">
               <nav className="gap-3 flex flex-col">
                 {links.map((link) => (
                   <div key={link.href}>
