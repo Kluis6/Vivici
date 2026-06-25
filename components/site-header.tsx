@@ -28,7 +28,7 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-[rgba(7,21,37,0.76)] backdrop-blur-xl">
-      <div className="mx-auto flex w-full container items-center justify-between p-4">
+      <nav className="mx-auto flex w-full container items-center justify-between p-4">
         <Link href="/" className="flex items-center gap-4">
           <div className="flex size-10 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground">
             <GoHomeFill className="size-6" />
@@ -43,22 +43,18 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-3 md:flex">
+        <ul className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
-            <Badge
-              key={link.href}
-              variant="outline"
-              render={
-                <Link
-                  href={link.href}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-foreground transition hover:bg-white/6"
-                />
-              }
-            >
-              {link.label}
-            </Badge>
+            <li key={link.href} className=" text-white hover:text-accent  ">
+              <Link
+                href={link.href}
+                className="px-4 py-2 text-sm font-light transition-all hover:bg-white/6 "
+              >
+                {link.label}
+              </Link>
+            </li>
           ))}
-        </nav>
+        </ul>
 
         <Drawer direction="left">
           <DrawerTrigger asChild>
@@ -102,30 +98,29 @@ export function SiteHeader() {
                   href="/"
                   className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
                 >
-                  
-              
-                  
-                  <FaSquareFacebook className="size-7 text-accent"/>
+                  <FaSquareFacebook className="size-7 text-accent" />
                 </Link>
-              </DrawerClose>
-              <DrawerClose asChild>
-                <Link
-                  href="/"
-                  className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
-                ><ImInstagram className="size-6 text-accent" /></Link>
               </DrawerClose>
               <DrawerClose asChild>
                 <Link
                   href="/"
                   className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
                 >
-                <FaLinkedin  className="size-7 text-accent" />
+                  <ImInstagram className="size-6 text-accent" />
+                </Link>
+              </DrawerClose>
+              <DrawerClose asChild>
+                <Link
+                  href="/"
+                  className="size-12 flex items-center justify-center border border-border/70  text-primary-foreground"
+                >
+                  <FaLinkedin className="size-7 text-accent" />
                 </Link>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-      </div>
+      </nav>
     </header>
   );
 }
