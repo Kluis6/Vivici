@@ -4,6 +4,9 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { GoHomeFill } from "react-icons/go";
 import { LuMenu } from "react-icons/lu";
+import { ImInstagram } from "react-icons/im";
+import { FaSquareFacebook } from "react-icons/fa6";
+import { FaLinkedin } from "react-icons/fa";
 import {
   Drawer,
   DrawerClose,
@@ -31,12 +34,12 @@ export function SiteHeader() {
             <GoHomeFill className="size-6" />
           </div>
           <div className="flex flex-col gap-1">
-            <p className="font-mono text-sm uppercase tracking-widest text-muted">
+            <p className="font-mono text-sm uppercase tracking-[0.3rem] text-muted">
               ViviC
             </p>
-            {/* <p className="text-xs font-semibold text-foreground">
+            <p className="text-xs font-semibold text-foreground">
               Imobiliária digital
-            </p> */}
+            </p>
           </div>
         </Link>
 
@@ -59,36 +62,65 @@ export function SiteHeader() {
 
         <Drawer direction="left">
           <DrawerTrigger asChild>
-            <Button size="icon" variant="ghost" className="md:hidden size-10">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="md:hidden size-10 rounded-none"
+            >
               <span className="sr-only">Toggle menu</span>
               <LuMenu className="size-6 text-muted" />
             </Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
-              <DrawerTitle>Move Goal</DrawerTitle>
-              <DrawerDescription>
-                Set your daily activity goal.
+              <DrawerTitle className="uppercase tracking-[0.3rem] text-muted font-mono">
+                ViviC
+              </DrawerTitle>
+              <DrawerDescription className="text-foreground">
+                Imobiliária digital
               </DrawerDescription>
             </DrawerHeader>
             <div className="no-scrollbar overflow-y-auto px-4">
-              {Array.from({ length: 10 }).map((_, index) => (
-                <p key={index} className="mb-4 leading-normal">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                  cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum.
-                </p>
-              ))}
+              <nav className="gap-3 flex flex-col">
+                {links.map((link) => (
+                  <div key={link.href}>
+                    <DrawerClose asChild>
+                      <Link
+                        href={link.href}
+                        className="py-2 text-sm font-medium text-foreground transition hover:bg-white/6"
+                      >
+                        {link.label}
+                      </Link>
+                    </DrawerClose>
+                  </div>
+                ))}
+              </nav>
             </div>
-            <DrawerFooter>
-              <Button>Submit</Button>
+            <DrawerFooter className="flex flex-row items-center justify-center gap-4">
               <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Link
+                  href="/"
+                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
+                >
+                  
+              
+                  
+                  <FaSquareFacebook className="size-6 text-accent"/>
+                </Link>
+              </DrawerClose>
+              <DrawerClose asChild>
+                <Link
+                  href="/"
+                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
+                ><ImInstagram className="size-5 text-accent" /></Link>
+              </DrawerClose>
+              <DrawerClose asChild>
+                <Link
+                  href="/"
+                  className="size-10 flex items-center justify-center border border-border/70  text-primary-foreground"
+                >
+                <FaLinkedin  className="size-6 text-accent" />
+                </Link>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
