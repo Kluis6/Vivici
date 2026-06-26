@@ -1,12 +1,12 @@
 "use client";
 
+import { motion } from "motion/react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { GoHomeFill } from "react-icons/go";
 import { LuMenu } from "react-icons/lu";
 import { ImInstagram } from "react-icons/im";
 import { FaSquareFacebook } from "react-icons/fa6";
-import { FaLinkedin } from "react-icons/fa";
+import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
 import {
   Drawer,
   DrawerClose,
@@ -18,6 +18,11 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 const links = [
   { href: "/", label: "Início" },
   { href: "/imoveis", label: "Imóveis" },
@@ -25,11 +30,39 @@ const links = [
   { href: "/admin", label: "Painel" },
 ];
 
+const whatsappNumber = "5521980122156";
+const whatsappMessage =
+  "Olá, Vivi! Vim pelo site da Vivici e gostaria de falar sobre um imóvel.";
+const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+const navItemVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      delay: 0.14 + index * 0.06,
+      ease: "easeOut" as const,
+    },
+  }),
+};
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-[rgba(7,21,37,0.76)] backdrop-blur-xl">
-      <nav className="mx-auto flex w-full container items-center justify-between p-4">
-        <Link href="/" className="flex items-center gap-4">
+      <motion.nav
+        initial={{ opacity: 0, y: -14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+        className="mx-auto flex w-full container items-center justify-between p-4"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
+        >
+          <Link href="/" className="flex items-center gap-4">
           <div className="flex size-10 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground">
             <GoHomeFill className="size-6" />
           </div>
@@ -41,20 +74,51 @@ export function SiteHeader() {
               Imobiliária digital
             </p>
           </div>
-        </Link>
+          </Link>
+        </motion.div>
 
         <ul className="hidden items-center gap-1 md:flex">
-          {links.map((link) => (
-            <li key={link.href} className=" text-white hover:text-accent  ">
+          {links.map((link, index) => (
+            <motion.li
+              key={link.href}
+              custom={index}
+              variants={navItemVariants}
+              initial="hidden"
+              animate="visible"
+              className=" text-white hover:text-accent  "
+            >
               <Link
                 href={link.href}
                 className="px-4 py-2 text-sm font-light transition-all hover:bg-white/6 "
               >
                 {link.label}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
+
+        <Tooltip>
+          <TooltipTrigger>
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.22, ease: "easeOut" }}
+            >
+              <Link
+                href={whatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Falar com a Vivi no WhatsApp"
+                className="rounded-none size-10 bg-green-700 text-white hover:bg-green-800 active:bg-green-900 hidden md:flex justify-center items-center"
+              >
+                <FaWhatsapp className="size-6 " />
+              </Link>
+            </motion.div>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Fale com a Vivi!</p>
+          </TooltipContent>
+        </Tooltip>
 
         <Drawer direction="left">
           <DrawerTrigger asChild>
@@ -63,7 +127,7 @@ export function SiteHeader() {
               variant="ghost"
               className="md:hidden size-10 rounded-none"
             >
-              <span className="sr-only">Toggle menu</span>
+              <span className="sr-only">menu</span>
               <LuMenu className="size-6 text-muted" />
             </Button>
           </DrawerTrigger>
@@ -76,22 +140,36 @@ export function SiteHeader() {
                 Imobiliária digital
               </DrawerDescription>
             </DrawerHeader>
-            <div className="px-4">
-              <nav className="gap-3 flex flex-col">
+            <nav className="gap-3 px-4 flex flex-col justify-between h-full">
+              <ul className=" flex flex-col gap-2 w-full ">
                 {links.map((link) => (
-                  <div key={link.href}>
+                  <li key={link.href}>
                     <DrawerClose asChild>
                       <Link
                         href={link.href}
-                        className="py-2 text-sm font-medium text-foreground transition hover:bg-white/6"
+                        className=" text-sm  font-medium transition-all  w-full block "
                       >
                         {link.label}
                       </Link>
                     </DrawerClose>
-                  </div>
+                  </li>
                 ))}
-              </nav>
-            </div>
+              </ul>
+
+              <div>
+                <DrawerClose asChild>
+                  <Link
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 h-10 text-sm font-medium text-white transition bg-green-700 hover:bg-green-800 active:bg-green-900 justify-center w-full"
+                  >
+                    <FaWhatsapp className="size-5 " />
+                    Fale com a Vivi!
+                  </Link>
+                </DrawerClose>
+              </div>
+            </nav>
             <DrawerFooter className="flex flex-row items-center justify-center gap-4">
               <DrawerClose asChild>
                 <Link
@@ -120,7 +198,7 @@ export function SiteHeader() {
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-      </nav>
+      </motion.nav>
     </header>
   );
 }

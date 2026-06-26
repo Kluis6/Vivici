@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { GoHomeFill } from "react-icons/go";
 
 function Block({
   className,
@@ -21,83 +22,12 @@ function Block({
 
 export function SiteHomeLoadingState() {
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-6 py-8 sm:px-10">
-      <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <Block className="rounded-[2.4rem] border border-border bg-[linear-gradient(160deg,rgba(11,26,43,0.96),rgba(7,21,37,0.88))] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.28)] sm:p-9">
-          <div className="flex flex-col gap-7">
-            <div className="flex gap-2">
-              <Skeleton className="h-8 w-40 rounded-full" />
-              <Skeleton className="h-8 w-56 rounded-full" />
-            </div>
-            <div className="space-y-4">
-              <Skeleton className="h-16 w-full max-w-4xl rounded-3xl" />
-              <Skeleton className="h-16 w-4/5 rounded-3xl" />
-              <Skeleton className="h-6 w-full max-w-2xl" />
-              <Skeleton className="h-6 w-3/4 max-w-xl" />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="rounded-[1.4rem] bg-[rgba(255,241,207,0.06)] p-4"
-                >
-                  <Skeleton className="h-3 w-20" />
-                  <Skeleton className="mt-4 h-8 w-16" />
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Skeleton className="h-12 w-40 rounded-full" />
-              <Skeleton className="h-12 w-40 rounded-full" />
-              <Skeleton className="h-12 w-48 rounded-full" />
-            </div>
-          </div>
-        </Block>
-
-        <div className="overflow-hidden rounded-[2.4rem] border border-border bg-surface/92 shadow-[0_30px_100px_rgba(0,0,0,0.24)]">
-          <Skeleton className="min-h-[520px] w-full rounded-none" />
+    <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
+          <GoHomeFill className="size-7" />
         </div>
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <div className="space-y-2">
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-9 w-96" />
-          </div>
-          <Skeleton className="h-4 w-36" />
-        </div>
-        <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <Block key={index}>
-              <Skeleton className="aspect-[4/3] w-full rounded-[1.6rem]" />
-              <Skeleton className="mt-5 h-5 w-32" />
-              <Skeleton className="mt-3 h-8 w-5/6" />
-              <Skeleton className="mt-3 h-4 w-2/3" />
-            </Block>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-5">
-        <div className="space-y-2">
-          <Skeleton className="h-3 w-32" />
-          <Skeleton className="h-9 w-[30rem]" />
-        </div>
-        <div className="grid gap-6">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <Block key={index}>
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="mt-4 h-4 w-full" />
-              <Skeleton className="mt-2 h-4 w-4/5" />
-              <div className="mt-6 flex gap-3">
-                <Skeleton className="h-11 w-40 rounded-full" />
-                <Skeleton className="h-11 w-32 rounded-full" />
-              </div>
-            </Block>
-          ))}
-        </div>
-      </section>
+      </div>
     </main>
   );
 }
@@ -272,7 +202,10 @@ export function AdminOverviewLoadingState() {
     <section className="space-y-8">
       <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
-          <Block key={index} className="rounded-[1.5rem] border border-border bg-surface/82 p-6">
+          <Block
+            key={index}
+            className="rounded-[1.5rem] border border-border bg-surface/82 p-6"
+          >
             <Skeleton className="h-4 w-20" />
             <Skeleton className="mt-4 h-10 w-16" />
           </Block>
@@ -288,7 +221,10 @@ export function AdminOverviewLoadingState() {
             <Skeleton className="mt-2 h-4 w-3/4" />
             <div className="mt-6 grid gap-3">
               {Array.from({ length: 3 }).map((__, innerIndex) => (
-                <Skeleton key={innerIndex} className="h-12 w-full rounded-2xl" />
+                <Skeleton
+                  key={innerIndex}
+                  className="h-12 w-full rounded-2xl"
+                />
               ))}
             </div>
           </Block>
@@ -341,23 +277,23 @@ export function AdminTableLoadingState({
   );
 }
 
-export function AdminPropertyFormLoadingState({
-  title,
-}: {
-  title: string;
-}) {
+export function AdminPropertyFormLoadingState({ title }: { title: string }) {
   return (
     <div className="space-y-8 rounded-[2rem] border border-border bg-surface/82 p-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold text-foreground">{title}</h1>
         <p className="text-sm leading-7 text-muted-foreground">
-          Cadastre ou ajuste os dados principais do imóvel para uso público e comercial.
+          Cadastre ou ajuste os dados principais do imóvel para uso público e
+          comercial.
         </p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         {Array.from({ length: 10 }).map((_, index) => (
-          <div key={index} className={index === 9 ? "md:col-span-2" : undefined}>
+          <div
+            key={index}
+            className={index === 9 ? "md:col-span-2" : undefined}
+          >
             <Skeleton className="mb-2 h-4 w-32" />
             <Skeleton className="h-11 w-full rounded-2xl" />
           </div>
@@ -371,7 +307,10 @@ export function AdminPropertyFormLoadingState({
 
       <div className="grid gap-5 md:grid-cols-2">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className={index === 4 ? "md:col-span-2" : undefined}>
+          <div
+            key={index}
+            className={index === 4 ? "md:col-span-2" : undefined}
+          >
             <Skeleton className="mb-2 h-4 w-32" />
             <Skeleton className="h-11 w-full rounded-2xl" />
           </div>
@@ -389,24 +328,23 @@ export function AdminPropertyFormLoadingState({
   );
 }
 
-export function AdminCampaignFormLoadingState({
-  title,
-}: {
-  title: string;
-}) {
+export function AdminCampaignFormLoadingState({ title }: { title: string }) {
   return (
     <div className="space-y-8 rounded-[2rem] border border-border bg-surface/82 p-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold text-foreground">{title}</h1>
         <p className="text-sm leading-7 text-muted-foreground">
-          Configure campanhas promocionais e conecte os imóveis que devem aparecer
-          em promoções públicas.
+          Configure campanhas promocionais e conecte os imóveis que devem
+          aparecer em promoções públicas.
         </p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className={index === 2 ? "md:col-span-2" : undefined}>
+          <div
+            key={index}
+            className={index === 2 ? "md:col-span-2" : undefined}
+          >
             <Skeleton className="mb-2 h-4 w-32" />
             <Skeleton className="h-11 w-full rounded-2xl" />
           </div>

@@ -15,7 +15,7 @@ export default async function Home() {
     await getPublicCatalogData();
 
   return (
-    <main className="mx-auto flex w-full container flex-col gap-y-16 px-4 py-4">
+    <main className="mx-auto flex w-full container flex-col gap-y-16 p-4">
       <Herosection />
   
       {/* <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
