@@ -15,6 +15,7 @@ import {
   labelFromOptions,
   propertyTypeOptions,
 } from "@/lib/catalog";
+import { LuBedDouble } from "react-icons/lu";
 
 type PropertyCardProps = {
   property: Pick<
@@ -41,8 +42,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
   const typeLabel = labelFromOptions(propertyTypeOptions, property.propertyType);
 
   return (
-    <Card className="overflow-hidden rounded-[2rem] border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
-      <div className="relative aspect-[4/3] bg-surface-elevated">
+    <Card className="overflow-hidden rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+      <div className="relative aspect-4/3 bg-surface-elevated">
         {property.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -55,10 +56,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
             Sem imagem
           </div>
         )}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[rgba(7,21,37,0.92)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-[rgba(7,21,37,0.92)] to-transparent" />
         <div className="absolute inset-x-4 bottom-4 flex flex-wrap gap-2">
           {property.isFeatured ? <Badge>Destaque</Badge> : null}
-          {stageLabel ? <Badge variant="secondary">{stageLabel}</Badge> : null}
+          {stageLabel ? <Badge variant="secondary" className="rounded-none">
+            {stageLabel}
+          </Badge> : null}
           {typeLabel ? <Badge variant="outline">{typeLabel}</Badge> : null}
         </div>
       </div>
@@ -74,8 +77,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4 px-5">
-        <div className="grid grid-cols-2 gap-3 rounded-[1.5rem] bg-[rgba(255,255,255,0.04)] p-3">
-          <div className="flex flex-col gap-1 rounded-[1.2rem] bg-[rgba(255,241,207,0.08)] p-3">
+        <div className="flex flex-col gap-3  bg-[rgba(255,255,255,0.04)] p-3">
+          <div className="flex flex-col gap-1  bg-[rgba(255,241,207,0.08)] p-3">
             <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
               Região
             </span>
@@ -83,12 +86,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
               {property.region?.name ?? "Não informada"}
             </span>
           </div>
-          <div className="flex flex-col gap-1 rounded-[1.2rem] bg-[rgba(255,255,255,0.04)] p-3">
+          <div className="flex flex-col gap-1 bg-[rgba(255,255,255,0.04)] p-3">
             <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
               Tipologia
             </span>
-            <span className="text-sm font-medium text-foreground">
-              {property.bedroomsLabel ?? "Sob consulta"}
+            <span className="text-sm font-medium text-foreground flex items-center gap-2">
+             <LuBedDouble /> {property.bedroomsLabel ?? "Sob consulta"}
             </span>
           </div>
         </div>
@@ -97,19 +100,21 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between gap-4 border-t border-border bg-[rgba(255,255,255,0.03)] px-5 py-4">
+      <CardFooter className="flex items-center justify-between gap-4 border-t rounded-none border-border bg-[rgba(255,255,255,0.03)] px-5 py-4">
         <div className="flex min-w-0 flex-col gap-1">
           <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
-            Vivici Collection
+            Vivic Collection
           </span>
-          <span className="truncate text-sm text-foreground">{property.slug}</span>
+          {/* <span className="truncate text-sm text-foreground">{property.slug}</span> */}
         </div>
         <Separator orientation="vertical" className="hidden h-8 md:block" />
         <Link
           href={`/imoveis/${property.slug}`}
-          className="inline-flex rounded-full bg-accent-soft px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+          className="inline-flex rounded-none bg-accent-soft px-4 py-2 text-sm font-semibold  hover:opacity-90"
         >
-          Ver imóvel
+          <p className="text-sm font-medium text-primary-foreground">
+            Ver imóvel
+          </p>
         </Link>
       </CardFooter>
     </Card>
