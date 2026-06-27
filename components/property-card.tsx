@@ -15,6 +15,7 @@ import {
   labelFromOptions,
   propertyTypeOptions,
 } from "@/lib/catalog";
+import { normalizeBedroomsLabel } from "@/lib/property";
 import { LuBedDouble } from "react-icons/lu";
 
 type PropertyCardProps = {
@@ -39,7 +40,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
     developmentStageOptions,
     property.developmentStage,
   );
-  const typeLabel = labelFromOptions(propertyTypeOptions, property.propertyType);
+  const typeLabel = labelFromOptions(
+    propertyTypeOptions,
+    property.propertyType,
+  );
+  const bedroomItems = normalizeBedroomsLabel(property.bedroomsLabel);
 
   return (
     <Card className="overflow-hidden rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
@@ -59,9 +64,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
         <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-[rgba(7,21,37,0.92)] to-transparent" />
         <div className="absolute inset-x-4 bottom-4 flex flex-wrap gap-2">
           {property.isFeatured ? <Badge>Destaque</Badge> : null}
-          {stageLabel ? <Badge variant="secondary" className="rounded-none">
-            {stageLabel}
-          </Badge> : null}
+          {stageLabel ? (
+            <Badge variant="secondary" className="rounded-none">
+              {stageLabel}
+            </Badge>
+          ) : null}
           {typeLabel ? <Badge variant="outline">{typeLabel}</Badge> : null}
         </div>
       </div>
@@ -72,7 +79,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {property.neighborhood}
-          {property.region ? ` • ${property.region.name}` : ""}
+          {property.region ?   ` • ${property.region.name}` : ""}
         </p>
       </CardHeader>
 
@@ -90,13 +97,29 @@ export function PropertyCard({ property }: PropertyCardProps) {
             <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
               Tipologia
             </span>
-            <span className="text-sm font-medium text-foreground flex items-center gap-2">
-             <LuBedDouble /> {property.bedroomsLabel ?? "Sob consulta"}
-            </span>
+            {bedroomItems.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {bedroomItems.map((item) => (
+                  <span
+                    key={item}
+                    className="flex items-center gap-2 bg-black/20 px-2 py-1 text-sm font-normal text-foreground"
+                  >
+                    <LuBedDouble />
+                    <span>{item}</span>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="flex w-fit items-center gap-2 bg-black/20 px-2 py-1 text-sm font-normal text-foreground">
+                <LuBedDouble />
+                <span>Sob consulta</span>
+              </span>
+            )}
           </div>
         </div>
         <p className="text-sm leading-7 text-muted-foreground">
-          {property.highlightText ?? "Consulte os detalhes completos deste imóvel."}
+          {property.highlightText ??
+            "Consulte os detalhes completos deste imóvel."}
         </p>
       </CardContent>
 

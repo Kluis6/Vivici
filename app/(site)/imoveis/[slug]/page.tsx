@@ -11,6 +11,7 @@ import {
   labelFromOptions,
   propertyTypeOptions,
 } from "@/lib/catalog";
+import { normalizeBedroomsLabel } from "@/lib/property";
 import { getPrisma } from "@/lib/prisma";
 
 type PropertyDetailsPageProps = {
@@ -93,6 +94,7 @@ export default async function PropertyDetailsPage({
 
       return allowedStatuses.includes(campaign.status);
     });
+  const bedroomItems = normalizeBedroomsLabel(property.bedroomsLabel);
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-10">
@@ -146,9 +148,22 @@ export default async function PropertyDetailsPage({
                     <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
                       Dormitórios
                     </span>
-                    <span className="text-sm font-medium text-foreground">
-                      {property.bedroomsLabel ?? "Sob consulta"}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {bedroomItems.length > 0 ? (
+                        bedroomItems.map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-full bg-black/20 px-3 py-1 text-sm font-medium text-foreground"
+                          >
+                            {item}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-sm font-medium text-foreground">
+                          Sob consulta
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Separator orientation="vertical" className="hidden h-10 sm:block" />
                   <div className="flex flex-col gap-1">
@@ -234,7 +249,7 @@ export default async function PropertyDetailsPage({
               </div>
               <div className="flex justify-between gap-4">
                 <dt>Dormitórios</dt>
-                <dd>{property.bedroomsLabel ?? "Não informado"}</dd>
+                <dd>{bedroomItems.length > 0 ? bedroomItems.join(" • ") : "Não informado"}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt>Status comercial</dt>

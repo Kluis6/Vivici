@@ -3,10 +3,9 @@ import Link from "next/link";
 import { CampaignCard } from "@/components/campaign-card";
 import { PropertyCard } from "@/components/property-card";
 
-
 import { formatDateTime, getPublicCatalogData } from "@/lib/catalog";
 import Herosection from "@/components/herosection";
-
+import { LuArrowUpRight } from "react-icons/lu";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +16,7 @@ export default async function Home() {
   return (
     <main className="mx-auto flex w-full container flex-col gap-y-16 p-4">
       <Herosection />
-  
+
       {/* <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col gap-7 rounded-[2.4rem] border border-border bg-[linear-gradient(160deg,rgba(11,26,43,0.96),rgba(7,21,37,0.88))] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.28)] sm:p-9">
           <div className="flex flex-wrap gap-2">
@@ -128,17 +127,21 @@ export default async function Home() {
       </section> */}
 
       <section className="flex flex-col gap-5">
-        <div className="flex items-end justify-between gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex items-end justify-between ">
+          <div className="flex flex-col gap-2 ">
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
               Imóveis em destaque
             </p>
-            <h2 className="text-3xl font-semibold text-foreground">
-              Unidades para vitrine e captação
+            <h2 className="md:text-3xl text-2xl font-semibold text-foreground align-baseline">
+              Rio e São Paulo
             </h2>
           </div>
-          <Link href="/imoveis" className="text-sm text-accent-soft">
-            Ver catálogo completo
+          <Link
+            href="/imoveis"
+            className="text-sm text-accent-soft justify-center items-center space-x-1 flex mb-1"
+          >
+            <p>Todos os imóveis</p>
+            <LuArrowUpRight />
           </Link>
         </div>
         <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
@@ -151,10 +154,10 @@ export default async function Home() {
       <section className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            Promoções ativas
+            Promoções para você
           </p>
-          <h2 className="text-3xl font-semibold text-foreground">
-            Campanhas já prontas para distribuição
+          <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
+            Encontre oportunidades ideais
           </h2>
         </div>
         <div className="grid gap-6">
@@ -163,7 +166,7 @@ export default async function Home() {
               <CampaignCard key={campaign.id} campaign={campaign} />
             ))
           ) : (
-            <div className="rounded-[2rem] border border-border bg-surface/80 p-8 text-muted-foreground">
+            <div className=" border border-border bg-surface/80 p-8 text-muted-foreground">
               Nenhuma campanha ativa para exibição pública.
             </div>
           )}

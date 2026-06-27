@@ -116,7 +116,7 @@ export function SiteHeader() {
             </motion.div>
           </TooltipTrigger>
           <TooltipContent side="left">
-            <p>Fale com a Vivi!</p>
+            <p>Fale conosco!</p>
           </TooltipContent>
         </Tooltip>
 
@@ -164,8 +164,8 @@ export function SiteHeader() {
                     rel="noreferrer"
                     className="flex items-center gap-3 h-10 text-sm font-medium text-white transition bg-green-700 hover:bg-green-800 active:bg-green-900 justify-center w-full"
                   >
-                    <FaWhatsapp className="size-5 " />
-                    Fale com a Vivi!
+                    <FaWhatsapp className="size-5" />
+                    Fale conosco!
                   </Link>
                 </DrawerClose>
               </div>
