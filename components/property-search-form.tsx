@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react";
 
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type PropertySearchFormProps = {
   params: {
@@ -17,14 +25,25 @@ type PropertySearchFormProps = {
   stageOptions: ReadonlyArray<{ value: string; label: string }>;
 };
 
+const ALL_VALUE = "__all__";
+
 export function PropertySearchForm({
   params,
   states,
   regions,
   stageOptions,
 }: PropertySearchFormProps) {
-  const [selectedState, setSelectedState] = useState(params.state ?? "");
-  const [selectedRegion, setSelectedRegion] = useState(params.region ?? "");
+  const selectTriggerClassName =
+    "!h-12 w-full rounded-none border-border bg-white/6 px-4 text-sm text-foreground";
+  const [selectedState, setSelectedState] = useState<string | null>(
+    params.state ?? null,
+  );
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(
+    params.region ?? null,
+  );
+  const [selectedStage, setSelectedStage] = useState<string | null>(
+    params.stage ?? null,
+  );
 
   const filteredRegions = selectedState
     ? regions.filter((region) => region.stateCode === selectedState)
@@ -35,54 +54,95 @@ export function PropertySearchForm({
       selectedRegion &&
       !filteredRegions.some((region) => region.slug === selectedRegion)
     ) {
-      setSelectedRegion("");
+      setSelectedRegion(null);
     }
   }, [filteredRegions, selectedRegion]);
 
   return (
     <form className="flex w-full flex-col gap-4 border border-border bg-[rgba(255,255,255,0.04)] p-4 md:flex-row">
-      <select
-        name="state"
+      {selectedState ? (
+        <input type="hidden" name="state" className="" value={selectedState} />
+      ) : null}
+      {selectedRegion ? (
+        <input type="hidden" name="region" value={selectedRegion} />
+      ) : null}
+      {selectedStage ? (
+        <input type="hidden" name="stage" value={selectedStage} />
+      ) : null}
+
+      <Select
         value={selectedState}
-        onChange={(event) => setSelectedState(event.target.value)}
-        className="h-12 w-full rounded-none border border-border bg-white/6 px-4 text-sm text-foreground outline-none"
+        
+        onValueChange={(value) =>
+          setSelectedState(value === ALL_VALUE ? null : value)
+        }
       >
-        <option value="">Todos os estados</option>
-        {states.map((state) => (
-          <option key={state.code} value={state.code}>
-            {state.name}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className={selectTriggerClassName}>
+          <SelectValue placeholder="Todos os estados" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value={ALL_VALUE}>Todos os estados</SelectItem>
+            {states.map((state) => (
+              <SelectItem key={state.code} value={state.code}>
+                {state.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
 
-      <select
-        name="region"
+      <Select
         value={selectedRegion}
-        onChange={(event) => setSelectedRegion(event.target.value)}
-        className="h-12 w-full rounded-none border border-border bg-white/6 px-4 text-sm text-foreground outline-none"
+        onValueChange={(value) =>
+          setSelectedRegion(value === ALL_VALUE ? null : value)
+        }
       >
-        <option value="">
-          {selectedState ? "Todas as regiões do estado" : "Todas as regiões"}
-        </option>
-        {filteredRegions.map((region) => (
-          <option key={region.id} value={region.slug}>
-            {region.name} ({region.stateCode})
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className={selectTriggerClassName}>
+          <SelectValue
+            placeholder={
+              selectedState
+                ? "Todas as regiões do estado"
+                : "Todas as regiões"
+            }
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value={ALL_VALUE}>
+              {selectedState
+                ? "Todas as regiões do estado"
+                : "Todas as regiões"}
+            </SelectItem>
+            {filteredRegions.map((region) => (
+              <SelectItem key={region.id} value={region.slug}>
+                {region.name} ({region.stateCode})
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
 
-      <select
-        name="stage"
-        defaultValue={params.stage ?? ""}
-        className="h-12 w-full rounded-none border border-border bg-white/6 px-4 text-sm text-foreground outline-none"
+      <Select
+        value={selectedStage}
+        onValueChange={(value) =>
+          setSelectedStage(value === ALL_VALUE ? null : value)
+        }
       >
-        <option value="">Todas as fases</option>
-        {stageOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className={selectTriggerClassName}>
+          <SelectValue placeholder="Todas as fases" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value={ALL_VALUE}>Todas as fases</SelectItem>
+            {stageOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
 
       <Input
         type="text"

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { DevelopmentStage, PropertyLifecycleStatus } from "@/generated/prisma/client";
 import { PropertyCard } from "@/components/property-card";
 import { PropertySearchForm } from "@/components/property-search-form";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { developmentStageOptions } from "@/lib/catalog";
 import { getPrisma } from "@/lib/prisma";
@@ -139,7 +138,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
       </section>
 
       {totalProperties > 0 ? (
-        <section className="mt-10 flex flex-col gap-4 border-t border-border/70 pt-6 lg:flex-row lg:items-center lg:justify-between">
+        <section className="mt-10  flex flex-col gap-4 border-t border-border/70 pt-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-center text-sm text-muted-foreground lg:text-left">
             Exibindo {startResult}-{endResult} de {totalProperties} imóveis
           </p>
