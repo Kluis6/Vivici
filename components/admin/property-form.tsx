@@ -1,11 +1,11 @@
 import type { DevelopmentStage, Property, PropertyLifecycleStatus, PropertyType, Region, State } from "@/generated/prisma/client";
 
+import { BedroomsInputPreview } from "@/components/admin/bedrooms-input-preview";
 import {
   developmentStageOptions,
   propertyStatusOptions,
   propertyTypeOptions,
 } from "@/lib/catalog";
-import { normalizeBedroomsLabel } from "@/lib/property";
 
 const fieldClassName =
   "h-11 w-full rounded-2xl border border-border bg-white/6 px-4 text-sm text-foreground outline-none transition focus:border-[var(--border-strong)]";
@@ -52,8 +52,6 @@ export function PropertyForm({
   regions,
   property,
 }: PropertyFormProps) {
-  const bedroomItems = normalizeBedroomsLabel(property?.bedroomsLabel);
-
   return (
     <form action={action} className="space-y-8 rounded-[2rem] border border-border bg-surface/82 p-6">
       <div className="space-y-2">
@@ -153,31 +151,10 @@ export function PropertyForm({
             ))}
           </select>
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-foreground">Dormitórios</span>
-          <input
-            name="bedroomsLabel"
-            defaultValue={property?.bedroomsLabel ?? ""}
-            placeholder="Ex.: 2 dorms. com suíte"
-            className={fieldClassName}
-          />
-          <p className="text-xs leading-6 text-muted-foreground">
-            Use separadores como <code>,</code>, <code>;</code>, <code>/</code> ou{" "}
-            <code>e</code> para múltiplas tipologias.
-          </p>
-          {bedroomItems.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {bedroomItems.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-border bg-white/6 px-3 py-1 text-xs font-medium text-foreground"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </label>
+        <BedroomsInputPreview
+          className={fieldClassName}
+          defaultValue={property?.bedroomsLabel}
+        />
         <label className="space-y-2 md:col-span-2">
           <span className="text-sm font-medium text-foreground">Chamada comercial</span>
           <input

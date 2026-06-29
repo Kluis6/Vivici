@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { GoHomeFill } from "react-icons/go";
+import { IoIosHome } from "react-icons/io";
 
 function Block({
   className,
@@ -25,7 +26,8 @@ export function SiteHomeLoadingState() {
     <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
       <div className="flex flex-col gap-4">
         <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
-          <GoHomeFill className="size-7" />
+         
+          <IoIosHome className="size-7"  />
         </div>
       </div>
     </main>
@@ -37,7 +39,7 @@ export function SiteCatalogLoadingState() {
     <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
       <div className="flex flex-col gap-4">
         <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
-          <GoHomeFill className="size-7" />
+          <IoIosHome className="size-7"  />
         </div>
       </div>
     </main>
@@ -49,7 +51,8 @@ export function SitePromotionsLoadingState() {
     <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
       <div className="flex flex-col gap-4">
         <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
-          <GoHomeFill className="size-7" />
+           <IoIosHome className="size-7"  />
+           
         </div>
       </div>
     </main>
@@ -61,7 +64,7 @@ export function SitePropertyDetailsLoadingState() {
     <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
       <div className="flex flex-col gap-4">
         <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
-          <GoHomeFill className="size-7" />
+         <IoIosHome className="size-7"  />
         </div>
       </div>
     </main>
@@ -73,7 +76,7 @@ export function LoginLoadingState() {
     <main className="mx-auto container flex justify-center items-center w-full h-[80vh] p-4">
       <div className="flex flex-col gap-4">
         <div className="flex size-12 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground animate-pulse">
-          <GoHomeFill className="size-7" />
+          <IoIosHome className="size-7"  />
         </div>
       </div>
     </main>

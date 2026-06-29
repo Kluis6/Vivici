@@ -47,7 +47,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
   const bedroomItems = normalizeBedroomsLabel(property.bedroomsLabel);
 
   return (
-    <Card className="overflow-hidden rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+    <Card className="overflow-hidden h-full rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
       <div className="relative aspect-4/3 bg-surface-elevated">
         {property.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -83,7 +83,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </p>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-4 px-5">
+      <CardContent className="flex flex-col gap-4 px-5 h-full">
         <div className="flex flex-col gap-3  bg-[rgba(255,255,255,0.04)] p-3">
           <div className="flex flex-col gap-1  bg-[rgba(255,241,207,0.08)] p-3">
             <span className="text-[11px] uppercase tracking-[0.24em] text-muted">

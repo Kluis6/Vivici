@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import { GoHomeFill } from "react-icons/go";
+import { IoIosHome } from "react-icons/io";
 import { LuMenu } from "react-icons/lu";
 import { ImInstagram } from "react-icons/im";
 import { FaSquareFacebook } from "react-icons/fa6";
@@ -64,7 +64,8 @@ export function SiteHeader() {
         >
           <Link href="/" className="flex items-center gap-4">
           <div className="flex size-10 items-center justify-center  bg-accent-soft text-sm font-semibold text-primary-foreground">
-            <GoHomeFill className="size-6" />
+          
+            <IoIosHome className="size-6"  />
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-mono text-sm uppercase tracking-[0.3rem] text-muted">
