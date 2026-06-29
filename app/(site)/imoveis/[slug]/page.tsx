@@ -1,8 +1,13 @@
 import { notFound } from "next/navigation";
 
-import { CampaignStatus, PropertyLifecycleStatus } from "@/generated/prisma/client";
+import {
+  AmenitySource,
+  CampaignStatus,
+  PropertyLifecycleStatus,
+} from "@/generated/prisma/client";
 import { CampaignCard } from "@/components/campaign-card";
 import { PropertyCard } from "@/components/property-card";
+import { PropertyShareActions } from "@/components/property-share-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -95,122 +100,210 @@ export default async function PropertyDetailsPage({
       return allowedStatuses.includes(campaign.status);
     });
   const bedroomItems = normalizeBedroomsLabel(property.bedroomsLabel);
+  const dedupedAmenities = Array.from(
+    property.amenities
+      .slice()
+      .sort((a, b) => {
+        const sourceScore = (source: AmenitySource) =>
+          source === AmenitySource.DETAIL ? 0 : 1;
+
+        return sourceScore(a.source) - sourceScore(b.source);
+      })
+      .reduce((map, item) => {
+        const key = item.amenityId;
+
+        if (!map.has(key)) {
+          map.set(key, item);
+        }
+
+        return map;
+      }, new Map<string, (typeof property.amenities)[number]>())
+      .values(),
+  ).sort((a, b) => a.position - b.position);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-10">
-      <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="flex flex-col gap-6">
-          <Card className="overflow-hidden rounded-[2.4rem] border border-border bg-surface/92 py-0 shadow-[0_26px_90px_rgba(0,0,0,0.22)] ring-0">
-            <div className="relative overflow-hidden">
-              {property.heroImageDesktopUrl ?? property.coverImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={property.heroImageDesktopUrl ?? property.coverImageUrl ?? ""}
-                  alt={property.title}
-                  className="aspect-[16/10] h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex aspect-[16/10] items-center justify-center text-muted-foreground">
-                  Sem imagem principal
-                </div>
-              )}
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,21,37,0.12),rgba(7,21,37,0.88))]" />
-              <CardContent className="absolute inset-x-0 bottom-0 flex flex-col gap-5 p-7 sm:p-8">
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">
-                    {labelFromOptions(propertyTypeOptions, property.propertyType) ?? "Imóvel"}
-                  </Badge>
-                  {property.developmentStage ? (
-                    <Badge variant="outline">
-                      {labelFromOptions(developmentStageOptions, property.developmentStage)}
-                    </Badge>
-                  ) : null}
-                  <Badge variant="outline">
-                    {property.isSoldOut ? "Vendido" : "Disponível"}
-                  </Badge>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-accent-soft">
-                    {property.region?.name ?? "Catálogo Vivici"}
-                  </p>
-                  <h1 className="text-5xl font-semibold tracking-[-0.04em] text-foreground">
-                    {property.title}
-                  </h1>
-                  <p className="text-lg text-muted-foreground">
-                    {property.neighborhood}
-                    {property.region ? ` • ${property.region.name}` : ""}
-                  </p>
-                </div>
-
-                <div className="grid gap-3 rounded-[1.8rem] border border-border bg-[rgba(255,245,232,0.14)] p-4 backdrop-blur sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
-                      Dormitórios
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {bedroomItems.length > 0 ? (
-                        bedroomItems.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full bg-black/20 px-3 py-1 text-sm font-medium text-foreground"
-                          >
-                            {item}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-sm font-medium text-foreground">
-                          Sob consulta
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <Separator orientation="vertical" className="hidden h-10 sm:block" />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
-                      Bairro
-                    </span>
-                    <span className="text-sm font-medium text-foreground">
-                      {property.neighborhood}
-                    </span>
-                  </div>
-                  <Separator orientation="vertical" className="hidden h-10 sm:block" />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
-                      Fonte
-                    </span>
-                    <span className="text-sm font-medium text-foreground">
-                      Vivici Collection
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
+    <main className="mx-auto w-full container px-4 py-4">
+      <Card className="overflow-hidden rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+        <div className="relative overflow-hidden">
+          {property.heroImageDesktopUrl ?? property.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={property.heroImageDesktopUrl ?? property.coverImageUrl ?? ""}
+              alt={property.title}
+              className="md:aspect-16/10 h-[50vh] md:h-[80vh] w-full object-cover"
+            />
+          ) : (
+            <div className="flex aspect-16/10 items-center justify-center text-muted-foreground">
+              Sem imagem principal
             </div>
-          </Card>
+          )}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,21,37,0.12),rgba(7,21,37,0.88))]" />
+          <CardContent className="absolute inset-x-0 bottom-0 flex flex-col gap-5 p-5 md:p-8">
+            <div className="flex flex-wrap gap-2">
+              {/* <Badge variant="secondary">
+                {labelFromOptions(propertyTypeOptions, property.propertyType) ?? "Imóvel"}
+              </Badge> */}
+              {property.developmentStage ? (
+                <Badge className=" rounded-none">
+                  {labelFromOptions(developmentStageOptions, property.developmentStage)}
+                </Badge>
+              ) : null}
+              <Badge className=" rounded-none">
+                {property.isSoldOut ? "Vendido" : "Disponível"}
+              </Badge>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-accent-soft">
+                {property.region?.name ?? "Catálogo Vivici"}
+              </p>
+              <h1 className="lg:text-5xl text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                {property.title}
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                {property.neighborhood}
+                {property.region ? ` • ${property.region.name}` : ""}
+              </p>
+            </div>
+
+            {/* <div className="grid gap-3 rounded-[1.8rem] border border-border bg-[rgba(255,245,232,0.14)] p-4 backdrop-blur sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                  Dormitórios
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {bedroomItems.length > 0 ? (
+                    bedroomItems.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full bg-black/20 px-3 py-1 text-sm font-medium text-foreground"
+                      >
+                        {item}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm font-medium text-foreground">
+                      Sob consulta
+                    </span>
+                  )}
+                </div>
+              </div>
+              <Separator orientation="vertical" className="hidden h-10 sm:block" />
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                  Bairro
+                </span>
+                <span className="text-sm font-medium text-foreground">
+                  {property.neighborhood}
+                </span>
+              </div>
+              <Separator orientation="vertical" className="hidden h-10 sm:block" />
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] uppercase tracking-[0.24em] text-muted">
+                  Fonte
+                </span>
+                <span className="text-sm font-medium text-foreground">
+                  Vivici Collection
+                </span>
+              </div>
+            </div> */}
+          </CardContent>
+        </div>
+
+        <CardContent className="flex flex-col gap-8 p-5 sm:p-6">
+          <section className="flex flex-col gap-4">
+            <CardTitle className="text-2xl font-semibold text-foreground">
+              Resumo
+            </CardTitle>
+            <PropertyShareActions title={property.title} />
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="flex justify-between gap-4 border border-border bg-white/4 px-4 py-3">
+                <dt>Tipo</dt>
+                <dd>
+                  {labelFromOptions(propertyTypeOptions, property.propertyType) ??
+                    "Não informado"}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 border border-border bg-white/4 px-4 py-3">
+                <dt>Fase</dt>
+                <dd>
+                  {labelFromOptions(
+                    developmentStageOptions,
+                    property.developmentStage,
+                  ) ?? "Não informada"}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 border border-border bg-white/4 px-4 py-3">
+                <dt>Dormitórios</dt>
+                <dd>{bedroomItems.length > 0 ? bedroomItems.join(" • ") : "Não informado"}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border border-border bg-white/4 px-4 py-3">
+                <dt>Status comercial</dt>
+                <dd>{property.isSoldOut ? "Vendido" : "Disponível"}</dd>
+              </div>
+            </div>
+          </section>
 
           {property.descriptionText ? (
-            <Card className="rounded-[2rem] border border-border bg-surface/82 shadow-[0_18px_60px_rgba(0,0,0,0.14)] ring-0">
-              <CardHeader className="flex flex-col gap-2">
-                <CardTitle className="text-2xl font-semibold text-foreground">
-                  Sobre o imóvel
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <section className="flex flex-col gap-4">
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Sobre o imóvel
+              </CardTitle>
+              <div className="border border-border bg-white/4 p-4">
                 <p className="whitespace-pre-line text-sm leading-8 text-muted-foreground">
                   {property.descriptionText}
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
+          ) : null}
+
+          {dedupedAmenities.length > 0 ? (
+            <section className="flex flex-col gap-4">
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Diferenciais
+              </CardTitle>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {dedupedAmenities.map((item) => (
+                  <div
+                    key={`${item.propertyId}-${item.amenityId}-${item.source}`}
+                    className="border border-border bg-white/4 px-4 py-3 text-sm text-muted-foreground"
+                  >
+                    {item.amenity.label}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {property.locations.length > 0 ? (
+            <section className="flex flex-col gap-4">
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Localização
+              </CardTitle>
+              <div className="grid gap-4">
+                {property.locations.map((location) => (
+                  <div
+                    key={location.id}
+                    className="border border-border bg-white/4 p-4 text-sm text-muted-foreground"
+                  >
+                    <p className="font-medium text-foreground">{location.label}</p>
+                    <p className="mt-2 leading-7">{location.address}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           ) : null}
 
           {property.media.length > 0 ? (
             <section className="flex flex-col gap-4">
-              <h2 className="text-2xl font-semibold text-foreground">Galeria</h2>
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Galeria
+              </CardTitle>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {property.media.slice(0, 9).map((media) => (
                   <div
                     key={media.id}
-                    className="overflow-hidden rounded-[1.6rem] border border-border bg-surface shadow-[0_14px_50px_rgba(0,0,0,0.12)]"
+                    className="overflow-hidden border border-border bg-surface/80"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -223,99 +316,32 @@ export default async function PropertyDetailsPage({
               </div>
             </section>
           ) : null}
-        </div>
-
-        <aside className="flex flex-col gap-6">
-          <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
-            <CardHeader className="flex flex-col gap-2">
-              <CardTitle className="text-2xl font-semibold text-foreground">Resumo</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
-              <div className="flex justify-between gap-4">
-                <dt>Tipo</dt>
-                <dd>
-                  {labelFromOptions(propertyTypeOptions, property.propertyType) ??
-                    "Não informado"}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Fase</dt>
-                <dd>
-                  {labelFromOptions(
-                    developmentStageOptions,
-                    property.developmentStage,
-                  ) ?? "Não informada"}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Dormitórios</dt>
-                <dd>{bedroomItems.length > 0 ? bedroomItems.join(" • ") : "Não informado"}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Status comercial</dt>
-                <dd>{property.isSoldOut ? "Vendido" : "Disponível"}</dd>
-              </div>
-            </CardContent>
-          </Card>
-
-          {property.amenities.length > 0 ? (
-            <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
-              <CardHeader className="flex flex-col gap-2">
-                <CardTitle className="text-2xl font-semibold text-foreground">
-                  Diferenciais
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-3 text-sm text-muted-foreground">
-                {property.amenities.map((item) => (
-                  <div
-                    key={`${item.propertyId}-${item.amenityId}-${item.source}`}
-                    className="rounded-2xl border border-border bg-white/4 px-4 py-3"
-                  >
-                    {item.amenity.label}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-
-          {property.locations.length > 0 ? (
-            <Card className="rounded-[2rem] border border-border bg-surface/82 ring-0">
-              <CardHeader className="flex flex-col gap-2">
-                <CardTitle className="text-2xl font-semibold text-foreground">
-                  Localização
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                {property.locations.map((location) => (
-                  <div
-                    key={location.id}
-                    className="rounded-2xl border border-border bg-white/4 p-4 text-sm text-muted-foreground"
-                  >
-                    <p className="font-medium text-foreground">{location.label}</p>
-                    <p className="mt-2 leading-7">{location.address}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-        </aside>
-      </section>
+        </CardContent>
+      </Card>
 
       {activeCampaigns.length > 0 ? (
-        <section className="mt-14 flex flex-col gap-5">
-          <h2 className="text-3xl font-semibold text-foreground">Campanhas ligadas</h2>
-          <div className="grid gap-6">
+        <Card className="mt-14 rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+          <CardHeader className="flex flex-col gap-2">
+            <CardTitle className="text-3xl font-semibold text-foreground">
+              Campanhas ligadas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6">
             {activeCampaigns.map((campaign) => (
               <CampaignCard key={campaign.id} campaign={campaign} />
             ))}
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       ) : null}
 
       {property.relatedProperties.length > 0 ? (
-        <section className="mt-14 flex flex-col gap-5">
-          <h2 className="text-3xl font-semibold text-foreground">Imóveis relacionados</h2>
-          <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <Card className="mt-14 rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
+          <CardHeader className="flex flex-col gap-2">
+            <CardTitle className="text-3xl font-semibold text-foreground">
+              Imóveis relacionados
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
             {property.relatedProperties
               .map((relation) => relation.relatedProperty)
               .filter((item): item is NonNullable<typeof item> => item !== null)
@@ -323,8 +349,8 @@ export default async function PropertyDetailsPage({
               .map((relatedProperty) => (
                 <PropertyCard key={relatedProperty.id} property={relatedProperty} />
               ))}
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       ) : null}
     </main>
   );
