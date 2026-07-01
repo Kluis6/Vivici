@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CampaignCard } from "@/components/campaign-card";
@@ -6,8 +7,26 @@ import { PropertyCard } from "@/components/property-card";
 import { formatDateTime, getPublicCatalogData } from "@/lib/catalog";
 import Herosection from "@/components/herosection";
 import { LuArrowUpRight } from "react-icons/lu";
+import { buildPageMetadata, seoConfig } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Encontre seu lar ideal",
+  description:
+    "Página inicial da Vivici com imóveis em destaque no Rio e em São Paulo, campanha promocionais ativas e acesso rápido ao catálogo completo.",
+  path: "/",
+  image: seoConfig.defaultOgImage,
+  imageAlt:
+    "Página inicial da Vivici com imagem principal da home e chamada para encontrar o lar ideal.",
+  keywords: [
+    "imobiliária digital",
+    "imóveis em destaque",
+    "apartamentos no Rio",
+    "apartamentos em São Paulo",
+    "Vivici",
+  ],
+});
 
 export default async function Home() {
   const { featuredProperties, highlightedCampaigns } =

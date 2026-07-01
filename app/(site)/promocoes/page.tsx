@@ -1,10 +1,29 @@
+import type { Metadata } from "next";
 import { CampaignStatus } from "@/generated/prisma/client";
 import { CampaignCard } from "@/components/campaign-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getPrisma } from "@/lib/prisma";
+import { buildPageMetadata, seoConfig } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Promoções imobiliárias",
+  description:
+    "Acompanhe campanhas promocionais ativas, lançamentos e oportunidades especiais ligadas ao catálogo público da Vivici.",
+  path: "/promocoes",
+  image: seoConfig.defaultOgImage,
+  imageAlt:
+    "Página de promoções da Vivici com campanhas imobiliárias e oportunidades especiais.",
+  keywords: [
+    "promoções imobiliárias",
+    "campanhas de imóveis",
+    "lançamentos",
+    "oportunidades de apartamento",
+    "Vivici promoções",
+  ],
+});
 
 export default async function PromotionsPage() {
   const prisma = getPrisma();

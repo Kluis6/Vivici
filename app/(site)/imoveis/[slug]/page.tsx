@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   AmenitySource,
@@ -18,6 +19,7 @@ import {
 import { getAmenityIcon } from "@/lib/amenity-icons";
 import { normalizeBedroomsLabel } from "@/lib/property";
 import { getPrisma } from "@/lib/prisma";
+import { buildPageMetadata, compactText } from "@/lib/seo";
 import { LuBedDouble } from "react-icons/lu";
 
 type PropertyDetailsPageProps = {
@@ -25,6 +27,85 @@ type PropertyDetailsPageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PropertyDetailsPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const prisma = getPrisma();
+
+  const property = await prisma.property.findUnique({
+    where: { slug },
+    select: {
+      slug: true,
+      title: true,
+      neighborhood: true,
+      highlightText: true,
+      descriptionText: true,
+      bedroomsLabel: true,
+      propertyType: true,
+      developmentStage: true,
+      coverImageUrl: true,
+      heroImageDesktopUrl: true,
+      status: true,
+      region: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  if (!property || property.status === PropertyLifecycleStatus.ARCHIVED) {
+    return buildPageMetadata({
+      title: "Imóvel não encontrado",
+      description:
+        "O imóvel solicitado não está disponível no catálogo público da Vivici.",
+      path: `/imoveis/${slug}`,
+      type: "article",
+    });
+  }
+
+  const typeLabel = labelFromOptions(propertyTypeOptions, property.propertyType);
+  const stageLabel = labelFromOptions(
+    developmentStageOptions,
+    property.developmentStage,
+  );
+  const bedrooms = normalizeBedroomsLabel(property.bedroomsLabel).join(", ");
+  const fallbackDescription = [
+    property.title,
+    typeLabel,
+    bedrooms ? `com ${bedrooms}` : null,
+    property.neighborhood ? `em ${property.neighborhood}` : null,
+    property.region?.name ? `na região de ${property.region.name}` : null,
+    stageLabel ? `em fase ${stageLabel.toLowerCase()}` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const description = compactText(
+    property.highlightText ??
+      property.descriptionText ??
+      fallbackDescription ??
+      `Conheça o imóvel ${property.title} no catálogo da Vivici.`,
+  );
+
+  return buildPageMetadata({
+    title: property.title,
+    description,
+    path: `/imoveis/${property.slug}`,
+    image: property.heroImageDesktopUrl ?? property.coverImageUrl,
+    imageAlt: `Foto de capa do imóvel ${property.title}. ${description}`,
+    type: "article",
+    keywords: [
+      property.title,
+      property.neighborhood,
+      property.region?.name ?? "",
+      typeLabel ?? "",
+      "imóvel à venda",
+      "Vivici",
+    ].filter(Boolean),
+  });
+}
 
 export default async function PropertyDetailsPage({
   params,

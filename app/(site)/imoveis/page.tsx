@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { DevelopmentStage, PropertyLifecycleStatus } from "@/generated/prisma/client";
 import { PropertyCard } from "@/components/property-card";
@@ -5,6 +6,7 @@ import { PropertySearchForm } from "@/components/property-search-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { developmentStageOptions } from "@/lib/catalog";
 import { getPrisma } from "@/lib/prisma";
+import { buildPageMetadata, seoConfig } from "@/lib/seo";
 
 type PropertiesPageProps = {
   searchParams: Promise<{
@@ -18,6 +20,23 @@ type PropertiesPageProps = {
 };
 
 const PAGE_SIZE = 12;
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Buscar imóveis",
+  description:
+    "Busque imóveis da Vivici por estado, região, fase do empreendimento e dormitórios para encontrar oportunidades alinhadas ao seu perfil.",
+  path: "/imoveis",
+  image: seoConfig.defaultOgImage,
+  imageAlt:
+    "Página de busca de imóveis da Vivici com filtros por estado, região, fase e dormitórios.",
+  keywords: [
+    "buscar imóveis",
+    "apartamentos à venda",
+    "lançamentos imobiliários",
+    "imóveis RJ",
+    "imóveis SP",
+  ],
+});
 
 function getVisiblePages(currentPage: number, totalPages: number) {
   if (totalPages <= 5) {
