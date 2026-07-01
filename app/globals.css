@@ -114,13 +114,11 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
 }
 
 body {
-  background:
-    radial-gradient(circle at top left, rgba(244, 208, 137, 0.08), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(240, 179, 76, 0.09), transparent 35%),
-    linear-gradient(180deg, var(--background-soft), var(--background));
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
@@ -142,10 +140,24 @@ button:not(:disabled),
 }
 
 .noise-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.noise-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image:
     radial-gradient(circle at top left, rgba(244, 208, 137, 0.12), transparent 30%),
     radial-gradient(circle at bottom right, rgba(185, 119, 31, 0.16), transparent 35%),
     linear-gradient(135deg, rgba(13, 29, 49, 0.94), rgba(7, 21, 37, 0.98));
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .dark {
@@ -198,7 +210,7 @@ button:not(:disabled),
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply bg-background font-sans;
   }
   h1,
   h2,

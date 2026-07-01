@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-
 import {
   AmenitySource,
   CampaignStatus,
@@ -7,17 +6,19 @@ import {
 } from "@/generated/prisma/client";
 import { CampaignCard } from "@/components/campaign-card";
 import { PropertyCard } from "@/components/property-card";
+import { PropertyMediaGallery } from "@/components/property-media-gallery";
 import { PropertyShareActions } from "@/components/property-share-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   developmentStageOptions,
   labelFromOptions,
   propertyTypeOptions,
 } from "@/lib/catalog";
+import { getAmenityIcon } from "@/lib/amenity-icons";
 import { normalizeBedroomsLabel } from "@/lib/property";
 import { getPrisma } from "@/lib/prisma";
+import { LuBedDouble } from "react-icons/lu";
 
 type PropertyDetailsPageProps = {
   params: Promise<{
@@ -125,7 +126,7 @@ export default async function PropertyDetailsPage({
     <main className="mx-auto w-full container px-4 py-4">
       <Card className="overflow-hidden rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
         <div className="relative overflow-hidden">
-          {property.heroImageDesktopUrl ?? property.coverImageUrl ? (
+          {(property.heroImageDesktopUrl ?? property.coverImageUrl) ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={property.heroImageDesktopUrl ?? property.coverImageUrl ?? ""}
@@ -144,11 +145,14 @@ export default async function PropertyDetailsPage({
                 {labelFromOptions(propertyTypeOptions, property.propertyType) ?? "Imóvel"}
               </Badge> */}
               {property.developmentStage ? (
-                <Badge className=" rounded-none">
-                  {labelFromOptions(developmentStageOptions, property.developmentStage)}
+                <Badge className="rounded-none bg-accent-foreground text-white">
+                  {labelFromOptions(
+                    developmentStageOptions,
+                    property.developmentStage,
+                  )}
                 </Badge>
               ) : null}
-              <Badge className=" rounded-none">
+              <Badge className="rounded-none bg-accent-foreground text-white">
                 {property.isSoldOut ? "Vendido" : "Disponível"}
               </Badge>
             </div>
@@ -212,11 +216,53 @@ export default async function PropertyDetailsPage({
 
         <CardContent className="flex flex-col gap-8 p-5 sm:p-6">
           <section className="flex flex-col gap-4">
-            <CardTitle className="text-2xl font-semibold text-foreground">
-              Resumo
-            </CardTitle>
+            {dedupedAmenities.length > 0 ? (
+              <section className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-2">
+                  {dedupedAmenities.map((item) => (
+                    <Badge
+                      key={`${item.propertyId}-${item.amenityId}-${item.source}`}
+                      className="rounded-none text-white bg-black/30 gap-x-1.5"
+                    >
+                      {getAmenityIcon(item.amenity.label)}
+                      <p>{item.amenity.label}</p>
+                    </Badge>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {property.descriptionText ? (
+              <section className="flex flex-col gap-4">
+                <p className="whitespace-pre-line text-sm leading-8 text-muted-foreground">
+                  {property.descriptionText}
+                </p>
+              </section>
+            ) : null}
+
+            {property.locations.length > 0 ? (
+              <section className="flex flex-col gap-4">
+                <CardTitle className="md:text-2xl text-xl font-semibold text-foreground">
+                  Localização
+                </CardTitle>
+                <div className="grid gap-4">
+                  {property.locations.map((location) => (
+                    <div
+                      key={location.id}
+                      className="text-sm text-muted-foreground"
+                    >
+                      <p className="font-medium text-foreground">
+                        {location.label}
+                      </p>
+                      <p className="mt-2 leading-7">{location.address}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
             <PropertyShareActions title={property.title} />
-            <div className="grid gap-3 md:grid-cols-2">
+            {/* <div className="grid gap-3 md:grid-cols-2">
               <div className="flex justify-between gap-4 border border-border bg-white/4 px-4 py-3">
                 <dt>Tipo</dt>
                 <dd>
@@ -241,79 +287,24 @@ export default async function PropertyDetailsPage({
                 <dt>Status comercial</dt>
                 <dd>{property.isSoldOut ? "Vendido" : "Disponível"}</dd>
               </div>
-            </div>
+            </div> */}
           </section>
-
-          {property.descriptionText ? (
-            <section className="flex flex-col gap-4">
-              <CardTitle className="text-2xl font-semibold text-foreground">
-                Sobre o imóvel
-              </CardTitle>
-              <div className="border border-border bg-white/4 p-4">
-                <p className="whitespace-pre-line text-sm leading-8 text-muted-foreground">
-                  {property.descriptionText}
-                </p>
-              </div>
-            </section>
-          ) : null}
-
-          {dedupedAmenities.length > 0 ? (
-            <section className="flex flex-col gap-4">
-              <CardTitle className="text-2xl font-semibold text-foreground">
-                Diferenciais
-              </CardTitle>
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {dedupedAmenities.map((item) => (
-                  <div
-                    key={`${item.propertyId}-${item.amenityId}-${item.source}`}
-                    className="border border-border bg-white/4 px-4 py-3 text-sm text-muted-foreground"
-                  >
-                    {item.amenity.label}
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {property.locations.length > 0 ? (
-            <section className="flex flex-col gap-4">
-              <CardTitle className="text-2xl font-semibold text-foreground">
-                Localização
-              </CardTitle>
-              <div className="grid gap-4">
-                {property.locations.map((location) => (
-                  <div
-                    key={location.id}
-                    className="border border-border bg-white/4 p-4 text-sm text-muted-foreground"
-                  >
-                    <p className="font-medium text-foreground">{location.label}</p>
-                    <p className="mt-2 leading-7">{location.address}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
 
           {property.media.length > 0 ? (
             <section className="flex flex-col gap-4">
               <CardTitle className="text-2xl font-semibold text-foreground">
                 Galeria
               </CardTitle>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {property.media.slice(0, 9).map((media) => (
-                  <div
-                    key={media.id}
-                    className="overflow-hidden border border-border bg-surface/80"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={media.url}
-                      alt={media.alt ?? property.title}
-                      className="aspect-[4/3] h-full w-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+              <PropertyMediaGallery
+                title={property.title}
+                items={property.media
+                  .slice(0, 9)
+                  .map((media) => ({
+                    id: media.id,
+                    url: media.url,
+                    alt: media.alt,
+                  }))}
+              />
             </section>
           ) : null}
         </CardContent>
@@ -347,7 +338,10 @@ export default async function PropertyDetailsPage({
               .filter((item): item is NonNullable<typeof item> => item !== null)
               .slice(0, 3)
               .map((relatedProperty) => (
-                <PropertyCard key={relatedProperty.id} property={relatedProperty} />
+                <PropertyCard
+                  key={relatedProperty.id}
+                  property={relatedProperty}
+                />
               ))}
           </CardContent>
         </Card>
