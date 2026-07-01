@@ -326,13 +326,13 @@ export default async function PropertyDetailsPage({
       ) : null}
 
       {property.relatedProperties.length > 0 ? (
-        <Card className="mt-14 rounded-none border border-border bg-surface/90 py-0 shadow-[0_22px_70px_rgba(0,0,0,0.22)] ring-0">
-          <CardHeader className="flex flex-col gap-2">
-            <CardTitle className="text-3xl font-semibold text-foreground">
+        <div className="mt-14  space-y-6">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-3xl font-semibold text-foreground">
               Imóveis relacionados
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            </h3>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
             {property.relatedProperties
               .map((relation) => relation.relatedProperty)
               .filter((item): item is NonNullable<typeof item> => item !== null)
@@ -343,8 +343,8 @@ export default async function PropertyDetailsPage({
                   property={relatedProperty}
                 />
               ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : null}
     </main>
   );
